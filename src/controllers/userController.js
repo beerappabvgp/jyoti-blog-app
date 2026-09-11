@@ -30,6 +30,7 @@ export const createUser = async (req, res) => {
         }
 
         res.json(response);
+        
 
     } catch (error) {
         const response = {
