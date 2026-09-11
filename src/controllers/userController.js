@@ -87,7 +87,7 @@ export const verifyJWTToken = async (token) => {
 
 export const generateJWTToken = async (user) => {
     console.log("user: ", user);
-    const token = jwt.sign({ id: user }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ data: user }, process.env.JWT_SECRET, {
         expiresIn: '7h'
     });
     return token;

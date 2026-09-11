@@ -2,12 +2,14 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { connectToDatabase } from './src/db/connectToDB.js';
 import { router } from './src/routes/userRoutes.js';
+import { blogRouter } from './src/routes/blogRoutes.js';
 dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 app.use('/api/v1/users', router);
+app.use('/api/v1/blogs', blogRouter);
 
 // connect to the database 
 connectToDatabase();
