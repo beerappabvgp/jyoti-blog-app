@@ -24,5 +24,8 @@ export const validateUserLogin = async (user) => {
     })
     // verify the password using bcrypt 
     const res = await bcrypt.compare(user.password, userData.password);
-    return res;
+    return {
+        "result": res,
+        "data": userData
+    };
 }

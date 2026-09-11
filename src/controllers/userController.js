@@ -1,6 +1,7 @@
 import * as z from 'zod';
 import { createUserInDB, validateUserLogin } from '../services/userService.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export const createUser = async (req, res) => {
     try {
@@ -53,11 +54,13 @@ export const loginUser = async (req, res) => {
         const userData = req.body;
         const validatedUserData = userSchema.parse(userData);
         // verify whether the username and the password is matching or not 
-        const result = await validateUserLogin(validatedUserData);
-        console.log("result: ", result);
+        const {result, data} = await validateUserLogin(validatedUserData);
+        //generate jwt token 
+        const token = await generateJWTToken(data);
         if (result == true) {
             const response = {
-                "message": "User Logged In successfully ... "
+                "message": "User Logged In successfully ... ",
+                "token": token,
             };
             res.status(200).json(response);
         } else {
@@ -75,4 +78,17 @@ export const loginUser = async (req, res) => {
         // send this response to the client
         res.status(500).json(response);
     }
+}
+
+export const verifyJWTToken = async (token) => {
+    const decodedToken = await jwt.verify(token, process.env.JWT_SECRET);
+    return decodedToken;
+}
+
+export const generateJWTToken = async (user) => {
+    console.log("user: ", user);
+    const token = jwt.sign({ id: user }, process.env.JWT_SECRET, {
+        expiresIn: '7h'
+    });
+    return token;
 }
