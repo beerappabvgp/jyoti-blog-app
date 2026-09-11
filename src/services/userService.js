@@ -1,6 +1,7 @@
 import { UserModel } from "../models/User.js"
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
+import { BlogModel } from "../models/Blog.js";
 
 export const createUserInDB = async (user) => {
     // take the data and store it in DB 
@@ -28,4 +29,28 @@ export const validateUserLogin = async (user) => {
         "result": res,
         "data": userData
     };
+}
+
+export const getUserBlogsFromDB = async (userId) => {
+    try {
+        // get all the blogs from the DB Of the userId
+        const blogs = await BlogModel.find({
+            author: userId,
+        });
+        return blogs;
+    } catch (error) {
+        console.log("error is: ", error);
+        throw new Error(error);
+    }
+}
+
+export const getUserProfile = async (userId) => {
+    try {
+        // get the profile data of the user from the db
+        const userProfile = await UserModel.findById(userId);
+        return userProfile;   
+    } catch (error) {
+        console.log("error while eading profile : ", error);
+        throw new Error(error);
+    }
 }

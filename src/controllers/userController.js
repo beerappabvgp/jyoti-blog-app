@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { createUserInDB, validateUserLogin } from '../services/userService.js';
+import { createUserInDB, getUserBlogsFromDB, getUserProfile, validateUserLogin } from '../services/userService.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -91,4 +91,55 @@ export const generateJWTToken = async (user) => {
         expiresIn: '7h'
     });
     return token;
+}
+
+export const getUserBlogs = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        if (!userId) {
+            const response = {
+                "message": "user not found",
+            }
+            return res.status(400).json(response);
+        }
+        const blogs = await getUserBlogsFromDB(userId);
+        const response = {
+            "message": "Blogs fetched successfully .... ",
+            "data": blogs
+        }
+        return res.status(200).json(response);
+    } catch (error) {
+        console.log("error while fetching blogs of the user ... ", error);
+        const response = {
+            "message": "internal server error",
+            "error": error.message,
+        }
+        res.status(500).json(response);
+    }
+}
+
+export const getProfile = async (req, res) => {
+    try {
+        const userId = req.user.id;
+        if (!userId) {
+            const response = {
+                "message": "Id is required in order to get the profile data"
+            }
+            return res.status(400).json(response);
+        }
+        const userProfile = await getUserProfile(userId);
+        const { password, ...userProfileWithoutPassword } = userProfile.toObject();
+        const response = {
+            "message": "User profile fetched successfully .. ",
+            "data": userProfileWithoutPassword
+        };
+        res.status(200).json(response);
+    } catch (error) {
+        console.log("error while fetching profile data : ", error);
+        const response = {
+            "message": "Internal server error",
+            "error": error,
+        };
+        res.status(500).json(response);
+    }
 }

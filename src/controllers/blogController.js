@@ -1,5 +1,5 @@
 import * as z from 'zod';
-import { createBlogInDB, getBlogByIdFromDB, updateBlogInDB } from '../services/blogService.js';
+import { createBlogInDB, deleteBlogById, getAllBlogsFromDB, getBlogByIdFromDB, updateBlogInDB } from '../services/blogService.js';
 
 export let createBlog = async (req, res) => {
     try {
@@ -13,7 +13,7 @@ export let createBlog = async (req, res) => {
         const blogData = req.body;
         const validatedBlogData = blogSchema.parse(blogData);
         console.log("req.user: ", req.user);
-        validatedBlogData.author = req.user.id;
+        validatedBlogData.author = req.user.data._id;
         const savedBlog = await createBlogInDB(validatedBlogData);
         const response = {
             "message": "Blog created successfully .... ",
@@ -82,6 +82,49 @@ export let getBlogById = async (req, res) => {
             "message": "Internal server error",
             "error": error.message,
         };
+        res.status(500).json(response);
+    }
+}
+
+export let deleteBlog = async (req, res) => {
+    try {
+        const blogId = req.params.blogId;
+        if (!blogId) {
+            const response = {
+                "message": "blogId is required in order to delete the blog post from the DB ... ",
+            }
+            return res.status(400).json(response);
+        }
+        let deletedBlogData = await deleteBlogById(blogId);
+        const response = {
+            "message": "The blog has been deleted successfully ... ",
+            "data": deletedBlogData,
+        }
+        res.status(200).json(response);
+    } catch (error) {
+        console.log("error in delete blog controller: ", error);
+        const response = {
+            "message": "Internal server error",
+            "errro": error.message,
+        };
+        res.status(500).json(response);
+    }
+}
+
+export let getAllBlogs = async (req, res) => {
+    try {
+        let blogs = await getAllBlogsFromDB();
+        const response = {
+            "message": "Blogs fetched successfully .... ",
+            "data": blogs
+        };
+        res.status(200).json(response);
+    } catch (error) {
+        console.log("error while fetching the blogs: ", error);
+        const response = {
+            "message": "internal server error",
+            "error": error,
+        }
         res.status(500).json(response);
     }
 }

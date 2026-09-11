@@ -36,3 +36,24 @@ export let getBlogByIdFromDB = async (blogId) => {
         throw error;
     }
 }
+
+export let deleteBlogById = async (blogId) => {
+    try {
+        let deletedBlogData = await BlogModel.findByIdAndDelete(blogId);
+        return deletedBlogData;
+    } catch (error) {
+        console.log("error while deleting the blog ... ", error);
+        throw new Error(error);
+    }
+}
+
+export let getAllBlogsFromDB = async () => {
+    try {
+        // get all the blogs from the DB 
+        const blogs = await BlogModel.find({});
+        return blogs;
+    } catch (error) {
+        console.error("error while fetching all the blogs: ", error);
+        throw error;
+    }
+}
