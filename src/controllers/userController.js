@@ -25,9 +25,10 @@ export const createUser = async (req, res) => {
 
         // take the validated data and store in the Database
         const savedUser = await createUserInDB(user);
+        const { password, ...userWithoutPassword } = savedUser.toObject();
         const response = {
             "message": "User created successfully ... ",
-            "data": savedUser,
+            "data": userWithoutPassword,
         }
 
         res.json(response);

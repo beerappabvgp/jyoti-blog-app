@@ -23,6 +23,11 @@ export const validateUserLogin = async (user) => {
     const userData = await UserModel.findOne({
         username: user.username,
     })
+    
+    if (!userData) {
+        return { result: false, data: null };
+    }
+    
     // verify the password using bcrypt 
     const res = await bcrypt.compare(user.password, userData.password);
     return {

@@ -8,6 +8,7 @@ export const authMiddleware = async (req, res, next) => {
             res.status(400).json({
                 "message": "Token is required ...",
             });
+            return;
         }
         let decodedToken = await verifyJWTToken(token);
         req.user = decodedToken;
